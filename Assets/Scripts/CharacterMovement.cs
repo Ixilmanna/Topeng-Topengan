@@ -5,15 +5,14 @@ public class PlayerMovement : MonoBehaviour
     public float moveSpeed = 5f;
 
     private Rigidbody rb;
+    private SpriteRenderer sprite;
     private Vector3 moveDirection;
-    private float originalScaleX;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        sprite = GetComponent<SpriteRenderer>();
 
-        // Simpan scale awal
-        originalScaleX = transform.localScale.x;
     }
 
     void Update()
@@ -25,22 +24,8 @@ public class PlayerMovement : MonoBehaviour
         moveDirection = new Vector3(horizontal, 0f, vertical).normalized;
 
         // FLIP DARI SCALE SAJA
-        if (horizontal > 0)
-        {
-            transform.localScale = new Vector3(
-                Mathf.Abs(originalScaleX),
-                transform.localScale.y,
-                transform.localScale.z
-            );
-        }
-        else if (horizontal < 0)
-        {
-            transform.localScale = new Vector3(
-                -Mathf.Abs(originalScaleX),
-                transform.localScale.y,
-                transform.localScale.z
-            );
-        }
+        if (horizontal > 0) sprite.flipX = false;
+        else if (horizontal < 0) sprite.flipX = true;
     }
 
     void FixedUpdate()
