@@ -1,72 +1,50 @@
 using UnityEngine;
 
-[RequireComponent(typeof(CharacterController))]
-public class Isometric8DirectionMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {
-    [Header("Movement")]
     public float moveSpeed = 5f;
-    public float rotationSpeed = 15f;
 
-    [Header("References")]
-    public Transform cameraTransform;
-
-    private CharacterController controller;
+    private Rigidbody rb;
+    private Vector3 moveDirection;
+    private float originalScaleX;
 
     void Start()
     {
-        controller = GetComponent<CharacterController>();
+        rb = GetComponent<Rigidbody>();
 
-        if (cameraTransform == null)
-            cameraTransform = Camera.main.transform;
+        // Simpan scale awal
+        originalScaleX = transform.localScale.x;
     }
 
     void Update()
     {
-        Move();
-        RotateToMouse();
-    }
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
 
-    void Move()
-    {
-        float h = Input.GetAxisRaw("Horizontal");
-        float v = Input.GetAxisRaw("Vertical");
+        // GERAK 8 ARAH
+        moveDirection = new Vector3(horizontal, 0f, vertical).normalized;
 
-        Vector3 inputDir = new Vector3(h, 0f, v).normalized;
-        if (inputDir.magnitude < 0.1f) return;
-
-        // Arah kamera (isometric friendly)
-        Vector3 camForward = cameraTransform.forward;
-        Vector3 camRight = cameraTransform.right;
-
-        camForward.y = 0f;
-        camRight.y = 0f;
-
-        camForward.Normalize();
-        camRight.Normalize();
-
-        Vector3 moveDir = camForward * inputDir.z + camRight * inputDir.x;
-        controller.Move(moveDir * moveSpeed * Time.deltaTime);
-    }
-
-    void RotateToMouse()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
-
-        if (groundPlane.Raycast(ray, out float distance))
+        // FLIP DARI SCALE SAJA
+        if (horizontal > 0)
         {
-            Vector3 hitPoint = ray.GetPoint(distance);
-            Vector3 lookDir = hitPoint - transform.position;
-            lookDir.y = 0f;
-
-            if (lookDir.magnitude < 0.1f) return;
-
-            Quaternion targetRot = Quaternion.LookRotation(lookDir);
-            transform.rotation = Quaternion.Slerp(
-                transform.rotation,
-                targetRot,
-                rotationSpeed * Time.deltaTime
+            transform.localScale = new Vector3(
+                Mathf.Abs(originalScaleX),
+                transform.localScale.y,
+                transform.localScale.z
             );
         }
+        else if (horizontal < 0)
+        {
+            transform.localScale = new Vector3(
+                -Mathf.Abs(originalScaleX),
+                transform.localScale.y,
+                transform.localScale.z
+            );
+        }
+    }
+
+    void FixedUpdate()
+    {
+        rb.linearVelocity = moveDirection * moveSpeed;
     }
 }
