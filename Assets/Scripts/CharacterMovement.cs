@@ -1,12 +1,15 @@
 using UnityEngine;
+using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public float moveSpeed = 5f;
-
+    [SerializeField] private Animator animator;
     private Rigidbody rb;
     private SpriteRenderer sprite;
+    [SerializeField] private float moveSpeed = 5f;
     private Vector3 moveDirection;
+    private float horizontalInput;
+    private float verticalInput;
 
     void Start()
     {
@@ -17,15 +20,17 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
-
-        // GERAK 8 ARAH
-        moveDirection = new Vector3(horizontal, 0f, vertical).normalized;
-
-        // FLIP DARI SCALE SAJA
-        if (horizontal > 0) sprite.flipX = false;
-        else if (horizontal < 0) sprite.flipX = true;
+        horizontalInput = Input.GetAxisRaw("Horizontal");
+        verticalInput = Input.GetAxisRaw("Vertical");
+        //GERAK
+        moveDirection = new Vector3(horizontalInput, 0f, verticalInput).normalized;
+        animator.SetFloat("Speed", moveDirection.magnitude);
+        flipSprite();
+    }
+    void flipSprite() 
+    {
+        if (horizontalInput > 0) sprite.flipX = false;
+        else if (verticalInput < 0) sprite.flipX = true;
     }
 
     void FixedUpdate()
