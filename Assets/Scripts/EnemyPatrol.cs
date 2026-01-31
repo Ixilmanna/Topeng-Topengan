@@ -3,12 +3,6 @@ using UnityEngine.AI;
 
 public class EnemyPatrol : MonoBehaviour
 {
-    public enum EnemyState
-    {
-        Patrol,
-        Chase
-    }
-
     [Header("Patrol")]
     public Transform pointA;
     public Transform pointB;
@@ -27,7 +21,7 @@ public class EnemyPatrol : MonoBehaviour
     private bool isWaiting;
     private float waitCounter;
 
-    private EnemyState currentState;
+    private bool isChasing; // ⭐ STATE
 
     void Start()
     {
@@ -35,7 +29,6 @@ public class EnemyPatrol : MonoBehaviour
         sprite = GetComponentInChildren<SpriteRenderer>();
 
         targetPoint = pointB;
-        currentState = EnemyState.Patrol;
 
         agent.updateRotation = false;
         agent.updateUpAxis = false;
@@ -45,36 +38,32 @@ public class EnemyPatrol : MonoBehaviour
     {
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
-        // ===== STATE SWITCH =====
+        // ===== MASUK MODE CHASE =====
         if (distanceToPlayer <= chaseDistance)
         {
-            currentState = EnemyState.Chase;
-            isWaiting = false;
+            isChasing = true;
         }
-        else if (distanceToPlayer >= stopChaseDistance)
+
+        // ===== KELUAR MODE CHASE =====
+        if (distanceToPlayer >= stopChaseDistance)
         {
-            if (currentState == EnemyState.Chase)
+            if (isChasing)
             {
+                // Reset patrol state
+                isWaiting = false;
                 agent.ResetPath();
             }
 
-            currentState = EnemyState.Patrol;
+            isChasing = false;
         }
 
-        // ===== RUN STATE =====
-        switch (currentState)
-        {
-            case EnemyState.Patrol:
-                Patrol();
-                break;
-
-            case EnemyState.Chase:
-                Chase(distanceToPlayer);
-                break;
-        }
+        // ===== JALANKAN MODE =====
+        if (isChasing)
+            ChasePlayer(distanceToPlayer);
+        else
+            Patrol();
 
         Flip();
-        DebugInfo(distanceToPlayer);
     }
 
     void Patrol()
@@ -100,7 +89,7 @@ public class EnemyPatrol : MonoBehaviour
         }
     }
 
-    void Chase(float distance)
+    void ChasePlayer(float distance)
     {
         if (distance <= stopDistance)
         {
@@ -120,17 +109,5 @@ public class EnemyPatrol : MonoBehaviour
     {
         if (agent.velocity.x > 0.1f) sprite.flipX = false;
         else if (agent.velocity.x < -0.1f) sprite.flipX = true;
-    }
-
-    // ===== DEBUG INFO =====
-    void DebugInfo(float distance)
-    {
-        Debug.Log(
-            "STATE: " + currentState +
-            " | Waiting: " + isWaiting +
-            " | HasPath: " + agent.hasPath +
-            " | Velocity: " + agent.velocity.magnitude.ToString("F2") +
-            " | DistanceToPlayer: " + distance.ToString("F2")
-        );
     }
 }
