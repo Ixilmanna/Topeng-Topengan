@@ -1,54 +1,80 @@
 using UnityEngine;
+using UnityEngine.AI;
 
-public class EnemyPatrolChase : MonoBehaviour
+public class EnemyPatrol : MonoBehaviour
 {
+    public enum EnemyState
+    {
+        Patrol,
+        Chase
+    }
+
     [Header("Patrol")]
     public Transform pointA;
     public Transform pointB;
-    public float patrolSpeed = 2f;
+    public float waitTime = 1f;
 
     [Header("Chase")]
     public Transform player;
-    public float chaseSpeed = 4f;
     public float chaseDistance = 5f;
     public float stopChaseDistance = 7f;
-    public float stopDistance = 1.2f; // 🔥 Jarak berhenti dari player
+    public float stopDistance = 1.2f;
 
-    [Header("Wait")]
-    public float waitTime = 1f;
-
-    private Rigidbody rb;
+    private NavMeshAgent agent;
     private SpriteRenderer sprite;
+
     private Transform targetPoint;
     private bool isWaiting;
     private float waitCounter;
 
-    private float originalScaleX;
+    private EnemyState currentState;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        agent = GetComponent<NavMeshAgent>();
         sprite = GetComponentInChildren<SpriteRenderer>();
+
         targetPoint = pointB;
-        originalScaleX = transform.localScale.x;
+        currentState = EnemyState.Patrol;
+
+        agent.updateRotation = false;
+        agent.updateUpAxis = false;
     }
 
     void Update()
     {
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
-        // ===== CHASE PLAYER =====
+        // ===== STATE SWITCH =====
         if (distanceToPlayer <= chaseDistance)
         {
-            ChasePlayer(distanceToPlayer);
-            return;
+            currentState = EnemyState.Chase;
+            isWaiting = false;
+        }
+        else if (distanceToPlayer >= stopChaseDistance)
+        {
+            if (currentState == EnemyState.Chase)
+            {
+                agent.ResetPath();
+            }
+
+            currentState = EnemyState.Patrol;
         }
 
-        // ===== BALIK PATROL =====
-        if (distanceToPlayer >= stopChaseDistance)
+        // ===== RUN STATE =====
+        switch (currentState)
         {
-            Patrol();
+            case EnemyState.Patrol:
+                Patrol();
+                break;
+
+            case EnemyState.Chase:
+                Chase(distanceToPlayer);
+                break;
         }
+
+        Flip();
+        DebugInfo(distanceToPlayer);
     }
 
     void Patrol()
@@ -65,37 +91,24 @@ public class EnemyPatrolChase : MonoBehaviour
             return;
         }
 
-        Move(targetPoint.position, patrolSpeed);
+        agent.SetDestination(targetPoint.position);
 
-        float distance = Vector3.Distance(transform.position, targetPoint.position);
-
-        if (distance < 0.2f)
+        if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
         {
-            rb.linearVelocity = Vector3.zero;
             isWaiting = true;
             waitCounter = waitTime;
         }
     }
 
-    void ChasePlayer(float distance)
+    void Chase(float distance)
     {
-        // 🔥 STOP kalau terlalu dekat
         if (distance <= stopDistance)
         {
-            rb.linearVelocity = Vector3.zero;
+            agent.ResetPath();
             return;
         }
 
-        Move(player.position, chaseSpeed);
-    }
-
-    void Move(Vector3 target, float speed)
-    {
-        Vector3 direction = (target - transform.position).normalized;
-
-        rb.linearVelocity = new Vector3(direction.x * speed, 0f, direction.z * speed);
-
-        Flip(direction.x);
+        agent.SetDestination(player.position);
     }
 
     void SwitchTarget()
@@ -103,9 +116,21 @@ public class EnemyPatrolChase : MonoBehaviour
         targetPoint = targetPoint == pointA ? pointB : pointA;
     }
 
-    void Flip(float horizontalInput)
+    void Flip()
     {
-        if (horizontalInput > 0) sprite.flipX = false;
-        else if (horizontalInput < 0) sprite.flipX = true;
+        if (agent.velocity.x > 0.1f) sprite.flipX = false;
+        else if (agent.velocity.x < -0.1f) sprite.flipX = true;
+    }
+
+    // ===== DEBUG INFO =====
+    void DebugInfo(float distance)
+    {
+        Debug.Log(
+            "STATE: " + currentState +
+            " | Waiting: " + isWaiting +
+            " | HasPath: " + agent.hasPath +
+            " | Velocity: " + agent.velocity.magnitude.ToString("F2") +
+            " | DistanceToPlayer: " + distance.ToString("F2")
+        );
     }
 }

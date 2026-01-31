@@ -1,5 +1,6 @@
-using UnityEngine;
+    using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class LifeSystem : MonoBehaviour
 {
@@ -11,10 +12,13 @@ public class LifeSystem : MonoBehaviour
 
     private SpriteRenderer spriteRenderer;
 
+   [SerializeField] private GameObject gameOverUI;
+
     void Start()
     {
         currentLife = maxLife;
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        gameOverUI.SetActive(false);
     }
 
     void OnCollisionEnter(Collision collision)
@@ -45,8 +49,8 @@ public class LifeSystem : MonoBehaviour
     void Die()
     {
         Debug.Log("Game Over");
-        gameObject.SetActive(false);
-        // panggil GameOver UI di sini
+        Time.timeScale = 0f;
+        gameOverUI.SetActive(true);
     }
 
     IEnumerator Invincible()
@@ -65,5 +69,11 @@ public class LifeSystem : MonoBehaviour
 
         spriteRenderer.enabled = true;
         isInvincible = false;
+    }
+
+    public void RestartGame()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
