@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class EnemyPatrolChase : MonoBehaviour
+public class EnemyPatrol : MonoBehaviour
 {
     [Header("Patrol")]
     public Transform pointA;
