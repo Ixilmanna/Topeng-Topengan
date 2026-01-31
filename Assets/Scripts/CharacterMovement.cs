@@ -31,9 +31,9 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        sprite = GetComponent<SpriteRenderer>();
+        sprite = GetComponentInChildren<SpriteRenderer>();
         playerCollider = GetComponent<Collider>();
-        IgnoreEnemyCollision(true);
+        IgnoreEnemyCollision(false);
     }
 
     void Update()

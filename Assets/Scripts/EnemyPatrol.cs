@@ -18,6 +18,7 @@ public class EnemyPatrolChase : MonoBehaviour
     public float waitTime = 1f;
 
     private Rigidbody rb;
+    private SpriteRenderer sprite;
     private Transform targetPoint;
     private bool isWaiting;
     private float waitCounter;
@@ -27,6 +28,7 @@ public class EnemyPatrolChase : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        sprite = GetComponentInChildren<SpriteRenderer>();
         targetPoint = pointB;
         originalScaleX = transform.localScale.x;
     }
@@ -101,15 +103,9 @@ public class EnemyPatrolChase : MonoBehaviour
         targetPoint = targetPoint == pointA ? pointB : pointA;
     }
 
-    void Flip(float dirX)
+    void Flip(float horizontalInput)
     {
-        if (dirX > 0)
-        {
-            transform.localScale = new Vector3(Mathf.Abs(originalScaleX), transform.localScale.y, transform.localScale.z);
-        }
-        else if (dirX < 0)
-        {
-            transform.localScale = new Vector3(-Mathf.Abs(originalScaleX), transform.localScale.y, transform.localScale.z);
-        }
+        if (horizontalInput > 0) sprite.flipX = false;
+        else if (horizontalInput < 0) sprite.flipX = true;
     }
 }
