@@ -7,15 +7,6 @@ public class HealthBar : MonoBehaviour
     [SerializeField] private Image totalHealthBar;
     [SerializeField] private Image currentHealthBar;
 
-    using UnityEngine;
-using UnityEngine.UI;
-
-public class HealthBar : MonoBehaviour
-{
-    [SerializeField] private LifeSystem playerLife;
-    [SerializeField] private Image totalHealthBar;
-    [SerializeField] private Image currentHealthBar;
-
     void Start()
     {
         if (playerLife == null)
@@ -24,7 +15,7 @@ public class HealthBar : MonoBehaviour
             return;
         }
 
-        // Set total bar (biasanya full)
+        // Total bar biasanya full
         totalHealthBar.fillAmount = 1f;
 
         Debug.Log("Max Life: " + playerLife.maxLife);
@@ -41,4 +32,3 @@ public class HealthBar : MonoBehaviour
         Debug.Log("Current Life: " + playerLife.currentLife);
     }
 }
-
