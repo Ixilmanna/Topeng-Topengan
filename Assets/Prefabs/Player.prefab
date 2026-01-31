@@ -264,9 +264,10 @@ GameObject:
   - component: {fileID: 1374798750841328398}
   - component: {fileID: 5941380559675497472}
   - component: {fileID: 6330514895248927767}
+  - component: {fileID: 4466934203773564935}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -368,3 +369,18 @@ MonoBehaviour:
   maxLife: 3
   currentLife: 0
   invincibleTime: 1.5
+  gameOverUI: {fileID: 0}
+--- !u!114 &4466934203773564935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7635169339757389039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3293539082c0a4d4ba763fb0a1275e62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInventory
+  maskCount: 0
+  requiredMasks: 0
