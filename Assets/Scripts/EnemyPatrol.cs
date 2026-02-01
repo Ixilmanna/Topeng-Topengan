@@ -3,6 +3,7 @@ using UnityEngine.AI;
 
 public class EnemyPatrol : MonoBehaviour
 {
+    [SerializeField] private Animator animator;
     [Header("Patrol")]
     public Transform pointA;
     public Transform pointB;
@@ -42,6 +43,7 @@ public class EnemyPatrol : MonoBehaviour
         if (distanceToPlayer <= chaseDistance)
         {
             isChasing = true;
+            animator.SetBool("IsRun", true) ;
         }
 
         // ===== KELUAR MODE CHASE =====
@@ -107,7 +109,7 @@ public class EnemyPatrol : MonoBehaviour
 
     void Flip()
     {
-        if (agent.velocity.x > 0.1f) sprite.flipX = false;
-        else if (agent.velocity.x < -0.1f) sprite.flipX = true;
+        if (agent.velocity.x < 0.1f) sprite.flipX = false;
+        else if (agent.velocity.x > -0.1f) sprite.flipX = true;
     }
 }
