@@ -37,6 +37,6 @@ public class MainMenuManager : MonoBehaviour
         // Optional delay
         yield return new WaitForSeconds(delayBeforeLoad);
 
-        SceneManager.LoadScene("movement test");
+        SceneManager.LoadScene("Level 1");
     }
 }
