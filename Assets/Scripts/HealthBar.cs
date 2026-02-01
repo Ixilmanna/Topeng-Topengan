@@ -3,32 +3,18 @@ using UnityEngine.UI;
 
 public class HealthBar : MonoBehaviour
 {
-    [SerializeField] private LifeSystem playerLife;
-    [SerializeField] private Image totalHealthBar;
-    [SerializeField] private Image currentHealthBar;
+    [SerializeField] private LifeSystem playerHealth;
+    [SerializeField] private Image totalhealthBar;
+    [SerializeField] private Image currenthealthBar;
 
-    void Start()
+    private void Start()
     {
-        if (playerLife == null)
-        {
-            Debug.LogError("Player LifeSystem belum di assign!");
-            return;
-        }
-
-        // Total bar biasanya full
-        totalHealthBar.fillAmount = 1f;
-
-        Debug.Log("Max Life: " + playerLife.maxLife);
+        totalhealthBar.fillAmount = 1f;
     }
 
-    void Update()
+    private void Update()
     {
-        if (playerLife == null) return;
-
-        float healthValue = (float)playerLife.currentLife / playerLife.maxLife;
-
-        currentHealthBar.fillAmount = healthValue;
-
-        Debug.Log("Current Life: " + playerLife.currentLife);
+        float healthValue = (float)playerHealth.currentLife / playerHealth.maxLife;
+        currenthealthBar.fillAmount = healthValue;
     }
 }
