@@ -6,6 +6,7 @@ public class GateCheck : MonoBehaviour
     public GameObject pressECaption;
     public GameObject needMaskCaption;
     public GameObject gateOpenCaption;
+    public GameObject winUI; // 🏆 WIN UI
 
     private bool gateOpened = false;
     private bool playerInside = false;
@@ -14,14 +15,10 @@ public class GateCheck : MonoBehaviour
 
     void Start()
     {
-        if (pressECaption != null)
-            pressECaption.SetActive(false);
-
-        if (needMaskCaption != null)
-            needMaskCaption.SetActive(false);
-
-        if (gateOpenCaption != null)
-            gateOpenCaption.SetActive(false);
+        if (pressECaption != null) pressECaption.SetActive(false);
+        if (needMaskCaption != null) needMaskCaption.SetActive(false);
+        if (gateOpenCaption != null) gateOpenCaption.SetActive(false);
+        if (winUI != null) winUI.SetActive(false); // 🔒 awal mati
     }
 
     void Update()
@@ -40,14 +37,10 @@ public class GateCheck : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInventory = other.GetComponent<PlayerInventory>();
+            playerInside = true;
 
-            if (playerInventory != null)
-            {
-                playerInside = true;
-
-                if (!gateOpened && pressECaption != null)
-                    pressECaption.SetActive(true);
-            }
+            if (!gateOpened && pressECaption != null)
+                pressECaption.SetActive(true);
         }
     }
 
@@ -57,7 +50,6 @@ public class GateCheck : MonoBehaviour
         {
             playerInside = false;
             playerInventory = null;
-
             HideAllCaption();
         }
     }
@@ -76,7 +68,8 @@ public class GateCheck : MonoBehaviour
             if (gateOpenCaption != null)
                 gateOpenCaption.SetActive(true);
 
-            // Animasi buka gate
+            // ⏳ Delay sedikit lalu WIN
+            StartCoroutine(ShowWinUI());
         }
         else
         {
@@ -104,15 +97,20 @@ public class GateCheck : MonoBehaviour
             pressECaption.SetActive(true);
     }
 
+    IEnumerator ShowWinUI()
+    {
+        yield return new WaitForSeconds(1.5f);
+
+        if (winUI != null)
+            winUI.SetActive(true);
+
+        Time.timeScale = 0f; // ⏸ pause game (opsional)
+    }
+
     void HideAllCaption()
     {
-        if (pressECaption != null)
-            pressECaption.SetActive(false);
-
-        if (needMaskCaption != null)
-            needMaskCaption.SetActive(false);
-
-        if (gateOpenCaption != null)
-            gateOpenCaption.SetActive(false);
+        if (pressECaption != null) pressECaption.SetActive(false);
+        if (needMaskCaption != null) needMaskCaption.SetActive(false);
+        if (gateOpenCaption != null) gateOpenCaption.SetActive(false);
     }
 }

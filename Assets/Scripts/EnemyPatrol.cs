@@ -4,6 +4,7 @@ using UnityEngine.AI;
 public class EnemyPatrol : MonoBehaviour
 {
     [SerializeField] private Animator animator;
+
     [Header("Patrol")]
     public Transform pointA;
     public Transform pointB;
@@ -21,13 +22,16 @@ public class EnemyPatrol : MonoBehaviour
     private Transform targetPoint;
     private bool isWaiting;
     private float waitCounter;
-
-    private bool isChasing; // ⭐ STATE
+    private bool isChasing;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         sprite = GetComponentInChildren<SpriteRenderer>();
+
+        // 🔧 FIX ANIMATOR NULL
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>();
 
         targetPoint = pointB;
 
@@ -41,21 +45,16 @@ public class EnemyPatrol : MonoBehaviour
 
         // ===== MASUK MODE CHASE =====
         if (distanceToPlayer <= chaseDistance)
-        {
             isChasing = true;
-            animator.SetBool("IsRun", true) ;
-        }
 
         // ===== KELUAR MODE CHASE =====
         if (distanceToPlayer >= stopChaseDistance)
         {
             if (isChasing)
             {
-                // Reset patrol state
                 isWaiting = false;
                 agent.ResetPath();
             }
-
             isChasing = false;
         }
 
@@ -64,6 +63,10 @@ public class EnemyPatrol : MonoBehaviour
             ChasePlayer(distanceToPlayer);
         else
             Patrol();
+
+        // ===== ANIMASI (AMAN) =====
+        if (animator != null)
+            animator.SetBool("IsRun", agent.velocity.magnitude > 0.1f);
 
         Flip();
     }
@@ -88,6 +91,7 @@ public class EnemyPatrol : MonoBehaviour
         {
             isWaiting = true;
             waitCounter = waitTime;
+            agent.ResetPath();
         }
     }
 
@@ -109,7 +113,9 @@ public class EnemyPatrol : MonoBehaviour
 
     void Flip()
     {
-        if (agent.velocity.x < 0.1f) sprite.flipX = false;
-        else if (agent.velocity.x > -0.1f) sprite.flipX = true;
+        if (agent.velocity.x < 0.1f)
+            sprite.flipX = false;
+        else if (agent.velocity.x > -0.1f)
+            sprite.flipX = true;
     }
 }
