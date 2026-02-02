@@ -14,7 +14,11 @@ public class EnemyPatrol : MonoBehaviour
     public Transform player;
     public float chaseDistance = 5f;
     public float stopChaseDistance = 7f;
+<<<<<<< Updated upstream
     public float stopDistance = 1.2f;
+=======
+    public float stopDistance = 1.2f; 
+>>>>>>> Stashed changes
 
     private NavMeshAgent agent;
     private SpriteRenderer sprite;
@@ -97,6 +101,10 @@ public class EnemyPatrol : MonoBehaviour
 
     void ChasePlayer(float distance)
     {
+<<<<<<< Updated upstream
+=======
+        
+>>>>>>> Stashed changes
         if (distance <= stopDistance)
         {
             agent.ResetPath();
